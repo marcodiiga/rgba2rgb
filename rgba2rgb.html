@@ -1,0 +1,154 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Convert RGBA to RGB</title>
+  <script src='utils/jquery-3.1.1.min.js'></script>
+  <script src='utils/spectrum.js'></script>
+  <link rel='stylesheet' href='utils/spectrum.css' />
+  <style>
+  .checker {
+    background-image: url('data:image/gif;base64,R0lGODlhEAAQAPEAAAAAAICAgMzMzAAAACH5BAEAAAIALAAAAAAQABAAAAIfjG+iq4jM3IFLJipswNly/XkcBpIiVaInlLJr9FZWAQA7');
+  }
+  .container {
+    display: table;
+    position: absolute;
+    width: 100%;
+    height: 10em;
+  }
+  div.container_center {
+    display: table-cell;
+    vertical-align: bottom;
+    color: white;
+    text-shadow: -1px 1px #000000;
+  }
+  div#boxleft {
+    width: 50%;
+    height: 8em;
+    margin-left: auto;
+    margin-right: auto;
+    float:left;
+    background-color: rgba(255, 0, 0, 0.5);
+  }
+  div#boxright {
+    width: 50%;
+    height: 8em;
+    margin-left: auto;
+    margin-right: auto;
+    float: right;
+    background-color: rgb(128, 0, 0);
+  }
+  input {
+    border: none;
+    border-width: 0px;
+  }
+  comment {
+    color: green;
+  }
+  keyword {
+    color: rgb(255, 0, 200);
+  }
+  literal {
+    color: rgb(42, 42, 200);
+  }
+  </style>
+</head>
+<body>
+  <div id="main">
+    <form>
+        <h3><samp>RGBA2RGB</samp> coversion</h3>
+        Alpha value both attenuates the background color and the color value<br/><br/>
+        <table>
+          <tr>
+            <td><samp>RGB_background</samp></td><td><samp>=</samp></td><td><input id='colorpicker_bg' /></td>
+            <td><comment>// aka <samp id="bg_text">N/A</samp></comment></td>
+          </tr>
+          <tr>
+            <td><samp>RGBA_color</samp></td><td><samp>=</samp></td><td><input id='colorpicker_rgba' /></td>
+            <td><comment>// aka <samp id="rgba_text">N/A</samp></comment></td>
+          </tr>
+        </table>
+        <h3>Result color</h2>
+        <p><input id="rgb_result" readonly=""><samp> = rgba2rgb(RGB_background, RGBA_color)</samp>
+        <comment>// aka <samp id="result_text">N/A</samp></comment></p>
+    <h3>Source code</h3>
+    <pre><keyword>function</keyword> rgba2rgb(RGB_background, RGBA_color)
+{
+    <keyword>var</keyword> alpha = RGBA_color.a;
+
+    <keyword>return new</keyword> Color(
+        (<literal>1</literal> - alpha) * RGB_background.r + alpha * RGBA_color.r,
+        (<literal>1</literal> - alpha) * RGB_background.g + alpha * RGBA_color.g,
+        (<literal>1</literal> - alpha) * RGB_background.b + alpha * RGBA_color.b
+    );
+}</pre>
+    </form>
+
+    <div class="checker container">
+      <div class="container_center">
+        <div id="boxleft">
+          <samp>RGBA color</samp>
+        </div>
+        <div id="boxright">
+          <samp>RGBA color on RGB background</samp>
+        </div>
+      </div>
+    </div>
+</body>
+<script>
+
+  function Color(r, g, b, a) {
+      this.r = r;
+      this.b = b;
+      this.g = g;
+      this.a = typeof a == "number" ? a : 1;
+  }
+
+  Color.prototype.rgba2rgb = function (color)
+  {
+      var alpha = color.a;
+
+      return new Color(
+          (1 - alpha) * this.r + alpha * color.r,
+          (1 - alpha) * this.g + alpha * color.g,
+          (1 - alpha) * this.b + alpha * color.b
+      );
+  };
+
+  function recalculate() {
+    var rgba = $("#colorpicker_rgba").spectrum("get");
+    var background = $("#colorpicker_bg").spectrum("get");
+
+    var rgba_color = new Color(rgba.toRgb().r, rgba.toRgb().g, rgba.toRgb().b, rgba.toRgb().a);
+    var background_color = new Color(background.toRgb().r, background.toRgb().g, background.toRgb().b);
+
+    var result_rgb = background_color.rgba2rgb(rgba_color);
+
+    $("#boxleft").css('background-color', 'rgba(' + rgba.toRgb().r + ',' +
+                                                    rgba.toRgb().g + ',' +
+                                                    rgba.toRgb().b + ',' +
+                                                    rgba.toRgb().a + ')'  );
+    var result_rgb_str = 'rgb(' + Math.round(result_rgb.r) + ',' +
+                                  Math.round(result_rgb.g) + ',' +
+                                  Math.round(result_rgb.b) + ')';
+    $("#boxright").css('background-color', result_rgb_str);
+    $("#bg_text").text(background.toHexString() + ' ' + background.toRgbString());
+    $("#rgba_text").text(rgba.toHexString() + ' ' + rgba.toRgbString());
+    $("#rgb_result").css('background-color', result_rgb_str);
+    $('#result_text').text(result_rgb_str);
+  }
+  $("#colorpicker_bg").spectrum({
+    color: "#000",
+    change: function(color) {
+      recalculate();
+    }
+  });
+  $("#colorpicker_rgba").spectrum({
+    color: "rgba(255, 0, 0, .5)",
+    showAlpha: true,
+    change: function(color) {
+      recalculate();
+    }
+  });
+  recalculate();
+</script>
+</html>
