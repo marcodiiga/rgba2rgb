@@ -134,7 +134,7 @@
     $("#bg_text").text(background.toHexString() + ' ' + background.toRgbString());
     $("#rgba_text").text(rgba.toHexString() + ' ' + rgba.toRgbString());
     $("#rgb_result").css('background-color', result_rgb_str);
-    $('#result_text').text(result_rgb_str);
+    $('#result_text').text(new tinycolor(result_rgb_str).toHexString() + ' ' + result_rgb_str);
   }
   $("#colorpicker_bg").spectrum({
     color: "#000",
