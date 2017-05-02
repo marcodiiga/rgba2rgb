@@ -138,6 +138,8 @@
   }
   $("#colorpicker_bg").spectrum({
     color: "#000",
+    preferredFormat: "rgb",
+    showInput: true,
     change: function(color) {
       recalculate();
     }
@@ -145,6 +147,8 @@
   $("#colorpicker_rgba").spectrum({
     color: "rgba(255, 0, 0, .5)",
     showAlpha: true,
+    preferredFormat: "rgb",
+    showInput: true,
     change: function(color) {
       recalculate();
     }
